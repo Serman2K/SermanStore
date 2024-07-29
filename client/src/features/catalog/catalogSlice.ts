@@ -1,11 +1,11 @@
-import { createAsyncThunk, createEntityAdapter, createSlice, SerializedError } from "@reduxjs/toolkit";
+import { createAsyncThunk, createEntityAdapter, createSlice } from "@reduxjs/toolkit";
 import { Product } from "../../app/models/product";
 import agent from "../../app/api/agent";
 import { RootState } from "../../app/store/configureStore";
 
 const productsAdapter = createEntityAdapter<Product>();
 
-export const fetchProductsAsync = createAsyncThunk<Product[]>(
+export const fetchProductsAsync = createAsyncThunk<Product[], void, { rejectValue: { error: any } }>(
     'catalog/fetchProductsAsync',
     async (_, thunkAPI) => {
         try {
@@ -16,7 +16,7 @@ export const fetchProductsAsync = createAsyncThunk<Product[]>(
     }
 )
 
-export const fetchProductAsync = createAsyncThunk<Product, number, { rejectValue: SerializedError }>(
+export const fetchProductAsync = createAsyncThunk<Product, number, { rejectValue: any }>(
     'catalog/fetchProductAsync',
     async (productId, thunkAPI) => {
         try {
@@ -61,4 +61,6 @@ export const catalogSlice = createSlice({
     })
 })
 
-export const productSelectors = productsAdapter.getSelectors((state: RootState) => state.catalog);
+type RootStateWithoutBasket = Omit<RootState, 'basket'>;
+
+export const productSelectors = productsAdapter.getSelectors((state: RootStateWithoutBasket) => state.catalog);
